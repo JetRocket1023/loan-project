@@ -7,30 +7,44 @@
     <title>貸款試算APP V0.1</title>
     <style>
         * {
+            font-family: Impact, "Microsoft JhengHei", "Heiti TC", "微軟正黑體", sans-serif;
+            line-height: 1.4;
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
         body {
-            font-family: sans-serif;
-            background-color: #69aed6;
+            font-family: Impact, "Microsoft JhengHei", "Heiti TC", "微軟正黑體", sans-serif;
+            background-color: #0D1117;
             padding: 24px;
-            color: #1e2c3b;
+            color: #F2C94C;
             text-align: center;
+            background-image:
+                linear-gradient(rgba(45, 226, 226, 0.05) 1px, transparent 10px),
+                linear-gradient(90deg, rgba(45, 226, 226, 0.05) 1px, transparent 10px);
+            background-size: 30px 30px;
+            color: #ffffff;
 
         }
 
         h1,
         h2 {
+            font-family: Impact, "Microsoft JhengHei", sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             font-size: 1.6rem;
-            color: #063e5f;
+            color: #961212;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), 0 0 10px rgba(150, 18, 18, 0.3);
+
             margin-bottom: 1rem;
+
         }
 
         h2 {
+            color: #961212;
             font-size: 1.5rem;
-
         }
 
         .container {
@@ -40,12 +54,14 @@
 
         .loan-form,
         .result {
-            background-color: #ffffff;
-            border-radius: 10px;
+            background: rgba(150, 18, 18, 0.75) !important;
+            backdrop-filter: blur(8px);
+            border: 5px solid rgba(242, 201, 76, 0.4);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(242, 201, 76, 0.1);
+            border-radius: 4px;
+            text-align: left;
             margin-bottom: 24px;
             padding: 24px;
-            box-shadow: 10px 10px;
-            text-align: left;
         }
 
         .form-row {
@@ -59,13 +75,17 @@
         .form-row label {
             width: 90px;
             font-weight: bold;
-            color: #063e5f;
+            color: #F2C94C;
         }
 
         input[type="number"],
         select {
-            padding: 8px 10px;
-            border: 1px solid #b0d4ee;
+            background: rgba(0, 0, 0, 0.6) !important;
+            border: 1px solid #2de2e2 !important;
+            color: #2de2e2 !important;
+            padding: 8px 12px;
+            box-shadow: inset 0 0 8px rgba(45, 226, 226, 0.3);
+            text-shadow: 0 0 5px rgba(45, 226, 226, 0.5);
             border-radius: 6px;
             font-size: 1rem;
             width: 180px;
@@ -78,67 +98,112 @@
             font-size: 1rem;
             font-weight: 900;
             border-radius: 6px;
-            border: none;
-            background-color: #2589c9;
-            color: #ffffff;
+            border: 1px solid #F2C94C;
+            background-color: #961212;
+            color: #F2C94C;
             cursor: pointer;
+            letter-spacing: 2px;
             /* 過度動畫搭配 */
             transition: backguand-color 0.2s;
         }
 
         #clacBtn:hover {
-            background-color: #0f4a6e;
+            background: #f2c94c !important;
+            color: #961212 !important;
+            box-shadow: 0 0 25px #f2c94c;
         }
 
         input[type="radio"] {
             width: 16px;
             height: 16px;
-            accent-color: #2589c9;
-        }
-
-        .result {
-            box-shadow: 10px 10px rgb(83, 131, 133);
+            accent-color: #F2C94C;
         }
 
         .summary-table,
-        .detial-table {
+        .detail-table {
             width: 100%;
+            border: none !important;
             border-collapse: collapse;
             margin-bottom: 24px;
         }
 
-        .detial-table th {
-            background-color: #063e5f;
-            color: #ffff;
+        .summary-table tr,
+        .detail-table tr {
+            border-bottom: 1px solid rgba(242, 201, 76, 0.15) !important;
+        }
+
+        .summary-table th,
+        .detail-table th {
+            background-color: rgba(242, 201, 76, 0.8);
+            color: #ffffff;
+            padding: 12px;
+            text-align: left;
+        }
+
+        /* 數據發光效果 */
+        #monthlyPayment,
+        #totalPayment,
+        #totalInterest,
+        #scheduleBody td {
+            color: #2de2e2 !important;
+            text-shadow: 0 0 10px rgba(45, 226, 226, 0.8);
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
             padding: 10px;
         }
 
-        .detial-table td {
+        .detail-table td {
             padding: 8px 10px;
             border-bottom: 1px solid #e5f6ff;
         }
 
-        .detial-table tr:nth-child(even) {
-            background-color: #94a1ad;
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none !important;
+            background-color: transparent !important;
+        }
+
+        .detail-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+
+        }
+
+        .detail-table td,
+        .summary-table td {
+            background-color: transparent !important;
+            /* 確保儲存格本身是透明的 */
+            border: none !important;
+            /* 徹底移除白框 */
+            border-bottom: 5px solid rgba(242, 201, 76, 0.15) !important;
+            /* 只留金色細底線 */
+            padding: 12px 10px;
+        }
+
+        /* 4. 數據顏色與發光（針對明細表格主體） */
+        #scheduleBody td {
+            color: #2de2e2 !important;
+            text-shadow: 0 0 8px rgba(45, 226, 226, 0.6);
         }
 
         .summary-table th {
-            background-color: #2589c9;
-            color: #ffff;
+            background-color: #F2C94C;
+            color: #ffffff;
+
         }
 
         .summary-table th,
         .summary-table td {
-            border: 1px solid #5369e6;
+            border: 1px solid #ffffff;
             padding: 10px 12px;
             text-align: left;
+
         }
 
         .subtitle {
-            font: 1rem sans-serif;
-            color: #6a8ba2;
+            font-size: 0.9rem;
+            color: #F2C94C;
             font-weight: 400;
-            letter-spacing: 1px;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -148,7 +213,6 @@
         <h1>貸款精算助手
             <span class="subtitle">輸入條件,快速分析您的還款計畫</span>
         </h1>
-        <hr>
         <form id="loanForm" action="" class="loan-form">
             <div class="form-row">
                 <label for="amount">貸款金額</label>
@@ -180,15 +244,12 @@
                 <label for="repayment">還款方式</label>
                 <input type="radio" id="repayment1" name="repayment" value="repaymentMethod1" checked>本息平均攤還
                 <input type="radio" id="repayment2" name="repayment" value="repaymentMethod2">本金平均攤還
-
             </div>
             <button type="submit" id="clacBtn">計算</button>
         </form>
         <h2>試算結果</h2>
         <div class="result">
             <div>
-
-
                 <!-- 摘要表格 -->
                 <table border="1" class="summary-table">
                     <thead>
@@ -214,7 +275,7 @@
                 </table>
 
                 <!-- 分期明細表格 -->
-                <table border="1" class="detial-table">
+                <table border="1" class="detail-table">
                     <thead>
                         <tr>
                             <th>期數</th>
@@ -246,12 +307,12 @@
                             <td>6666</td>
                             <td>1000000</td>
                         </tr>
-                        tr>
-                        <td>4</td>
-                        <td>10000</td>
-                        <td>100000</td>
-                        <td>6666</td>
-                        <td>1000000</td>
+                        <tr>
+                            <td>4</td>
+                            <td>10000</td>
+                            <td>100000</td>
+                            <td>6666</td>
+                            <td>1000000</td>
                         </tr>
                     </tbody>
                 </table>
