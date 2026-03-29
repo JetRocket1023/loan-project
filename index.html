@@ -246,7 +246,8 @@
                 <input type="radio" id="repayment1" name="repayment" value="repaymentMethod1" checked>本息平均攤還
                 <input type="radio" id="repayment2" name="repayment" value="repaymentMethod2">本金平均攤還
             </div>
-            <button type="submit" id="clacBtn">計算</button>
+            <!--後端才需要submit-->
+            <button type="button" id="clacBtn">計算</button>
         </form>
         <h2>試算結果</h2>
         <div class="result">
@@ -319,6 +320,32 @@
                 </table>
             </div>
         </div>
+        <script>
+            const title = document.querySelector("h1")
+            console.log(title);
+            title.style.color = "green"
+            //修改內容1.只改文字
+            title.innerText = "AI貸款精算助手";
+            //修改內容2.含標籤語法
+            title.innerHTML = "<b style='background-color:yellow'>AI貸款精算助手!</b>";
+
+            const amountEL = document.querySelector("#amount");
+            const rateEL = document.querySelector("#rate");
+            const loanYearsEL = document.querySelector("#loanYears");
+            const clacBtnEL = document.querySelector("#clacBtn");
+            console.log(amountEL, rateEL, loanYearsEL, clacBtnEL);
+            clacBtn.addEventListener("click", function (e) {
+                let amount = amountEL.value;
+                let rate = rateEL.value;
+                let loanYears = loanYearsEL.value;
+                //多個radio用name的取值方式
+                let method = document.querySelector(
+                    "input[name='repayment']:checked"
+                ).value
+                console.log(amount, rate, loanYears, method);
+
+            });
+        </script>
 </body>
 
 </html>
