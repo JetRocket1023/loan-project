@@ -263,15 +263,15 @@
                     <tbody>
                         <tr>
                             <td>每月還款金額</td>
-                            <td id="monthlyPayment">6666666</td>
+                            <td id="monthlyPayment"></td>
                         </tr>
                         <tr>
                             <td>總還款金額</td>
-                            <td id="totalPayment">66666666666</td>
+                            <td id="totalPayment"></td>
                         </tr>
                         <tr>
                             <td>總利息支出</td>
-                            <td id="totalInterest">333333333</td>
+                            <td id="totalInterest"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -296,21 +296,21 @@
         <script>
             const title = document.querySelector("h1")
             console.log(title);
-            title.style.color = "green"
+            //title.style.color = "green"
             //修改內容1.只改文字
             title.innerText = "AI貸款精算助手";
             //修改內容2.含標籤語法
-            title.innerHTML = "<b style='background-color:yellow'>AI貸款精算助手!</b>";
+            //title.innerHTML = "<b style='background-color:yellow'>AI貸款精算助手!</b>";
 
-            const amountEL = document.querySelector("#amount");
-            const rateEL = document.querySelector("#rate");
-            const loanYearsEL = document.querySelector("#loanYears");
-            const clacBtnEL = document.querySelector("#clacBtn");
-            console.log(amountEL, rateEL, loanYearsEL, clacBtnEL);
+            const amountEl = document.querySelector("#amount");
+            const rateEl = document.querySelector("#rate");
+            const loanYearsEl = document.querySelector("#loanYears");
+            const clacBtnEl = document.querySelector("#clacBtn");
+            console.log(amountEl, rateEl, loanYearsEl, clacBtnEl);
             clacBtn.addEventListener("click", function (e) {
-                let amount = amountEL.value;
-                let rate = rateEL.value;
-                let loanYears = loanYearsEL.value;
+                let amount = amountEl.value;
+                let rate = rateEl.value;
+                let loanYears = loanYearsEl.value;
                 //多個radio用name的取值方式
                 let method = document.querySelector(
                     "input[name='repayment']:checked"
@@ -320,12 +320,16 @@
                 let schedules = repaymentMethod1(amount * 10000, rate, loanYears);
                 renderTable(schedules);
             });
-
             //繪製table
             function renderTable(schedules) {
                 let tableHtml = "";
+                let totalPrincipalSum = 0; // 用於加總總還款金額
+                let totalInterestSum = 0;  // 用於加總總利息
                 for (let i = 0; i < schedules.length; i++) {
-                    let tableHtml = `
+                    // 累加每一期的數據
+                    totalPrincipalSum += schedules[i].monthlyPayment;
+                    totalInterestSum += schedules[i].interest;
+                    tableHtml += `
                     <tr>
                         <td>${schedules[i].month}</td>
                         <td>${schedules[i].monthlyPayment + schedules[i].interest}</td>
@@ -334,13 +338,22 @@
                         <td>${schedules[i].amount}</td>
                     </tr>
                     `;
-                    console.log(tableHtml);
-
                 }
+                console.log(tableHtml);
+                document.querySelector("#scheduleBody").innerHTML = tableHtml;
+                // 每月還款金額 (以第一期為準，或是您可以計算平均值)
+                const firstMonthPayment = schedules[0].monthlyPayment + schedules[0].interest;
+                document.querySelector("#monthlyPayment").innerText = firstMonthPayment.toLocaleString();
+
+                // 總還款金額
+                const totalPayment = totalPrincipalSum + totalInterestSum;
+                document.querySelector("#totalPayment").innerText = totalPayment.toLocaleString();
+
+                // 總利息支出
+                document.querySelector("#totalInterest").innerText = totalInterestSum.toLocaleString();
             }
 
-
-
+            //本金平均攤還
             function repaymentMethod1(amount, rate, years) {
 
                 let monthRate = rate / 100 / 12; //月利率
@@ -374,23 +387,16 @@
                     schedules.push(
 
                         {
-
                             "month": i + 1,
-
                             "monthlyPayment": monthlyPayment,
-
                             "interest": interest,
-
                             "amount": amount
-
                         }
-
                     );
-
                 }
 
                 console.log(schedules);
-
+                return schedules;
 
                 document.querySelector("#scheduleBody").innerHTML = tableHtml;
 
