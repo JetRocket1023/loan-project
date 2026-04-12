@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>貸款試算APP V0.1</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/utils.js"></script>
+
     <style>
         * {
             font-family: Impact, "Microsoft JhengHei", "Heiti TC", "微軟正黑體", sans-serif;
@@ -249,7 +252,9 @@
             <!--後端才需要submit-->
             <button type="button" id="clacBtn">計算</button>
         </form>
-        <h2>試算結果</h2>
+        <h2>試算結果
+            <button id="exportBtn" type="button"> 輸出CSV</button>
+        </h2>
         <div class="result">
             <div>
                 <!-- 摘要表格 -->
@@ -294,6 +299,8 @@
             </div>
         </div>
         <script>
+
+
             const title = document.querySelector("h1")
             console.log(title);
             //title.style.color = "green"
@@ -301,12 +308,38 @@
             title.innerText = "AI貸款精算助手";
             //修改內容2.含標籤語法
             //title.innerHTML = "<b style='background-color:yellow'>AI貸款精算助手!</b>";
-
+            let schedules = [];
             const amountEl = document.querySelector("#amount");
             const rateEl = document.querySelector("#rate");
             const loanYearsEl = document.querySelector("#loanYears");
             const clacBtnEl = document.querySelector("#clacBtn");
             console.log(amountEl, rateEl, loanYearsEl, clacBtnEl);
+            exportBtnE1.addEventListener("click", function (e) {
+                console.log(schedules);
+                if (schedules.length == 0) {
+                    alert("目前無資料,請先計算");
+                    return;
+                }
+                let data = [];
+                const headers = ["期數", "月付金額", "本金", "利息", "剩餘本金"]
+                for (let i = 0; i < schedules.length; i++) {
+                    data.push(
+                        [
+                            schedules[i].month,
+                            schedules[i].monthlyPayment + schedules[i].interest,
+                            schedules[i].monthlyPayment,
+                            schedules[i].interest,
+                            schedules[i].amount
+                        ]
+                    )
+                }
+                console.log(data)
+                downloadCSV(headers, data);
+
+            });
+
+
+
             clacBtn.addEventListener("click", function (e) {
                 let amount = amountEl.value;
                 let rate = rateEl.value;
@@ -317,9 +350,32 @@
                 ).value;
 
                 console.log(amount, rate, loanYears, method);
-                let schedules = repaymentMethod1(amount * 10000, rate, loanYears);
+                schedules = repaymentMethod1(amount * 10000, rate, loanYears);
                 renderTable(schedules);
             });
+
+            function renderSummary(schedules) {
+                const monthlyPaymentEl = document.querySelector("#monthlyPayment");
+                const totalPaymentEl = document.querySelector("#totalPayment");
+                const totalInterestEl = document.querySelector("#totalInterest");
+
+                console.log(monthlyPaymentEl, totalPaymentEl, totalInterestEl);
+
+                monthlyPaymentEl.innerText = `第一個月還款：${schedules[0].monthlyPayment + schedules[0].interest}元`;
+
+                let totalInterest = 0, totalPayment = 0;
+                for (let i = 0; i < schedules.length; i++) {
+                    totalInterest += schedules[i].interest;
+                    totalPayment += schedules[i].monthlyPayment;
+                }
+
+                console.log(totalInterest, totalPayment);
+
+                totalPaymentEl.innerHTML = `<b style='color:blue'>${totalPayment + totalInterest}元</b>`;
+                totalInterestEl.innerHTML = `<b style='color:red'>${totalInterest}元</b>`;
+
+
+            }
             //繪製table
             function renderTable(schedules) {
                 let tableHtml = "";
@@ -398,7 +454,7 @@
                 console.log(schedules);
                 return schedules;
 
-                document.querySelector("#scheduleBody").innerHTML = tableHtml;
+                //document.querySelector("#scheduleBody").innerHTML = tableHtml;
 
             }
         </script>
