@@ -214,7 +214,7 @@
 <body>
     <div class="container">
         <h1>貸款精算助手
-            <span class="subtitle">輸入條件,快速分析您的還款計畫</span>
+            <span class="subtitle">輸入條件，快速分析您的還款計畫</span>
         </h1>
         <form id="loanForm" action="" class="loan-form">
             <div class="form-row">
@@ -225,12 +225,6 @@
                 <label for="rate">貸款利率</label>
                 <input type="number" id="rate" name="rate" value="1.85" step="0.01" min="1"> %
             </div>
-            <!--<div class="form-row">
-                 新增手續費用欄位  handlingFree
-                <label for="handlingFree">貸款手續費</label>
-                <input type="number" id="handlingFree" name="handlingFree" placeholder="請輸入相關手續費" required> 元
-               
-            </div>-->
             <div class="form-row">
                 <label for="loanYears">貸款年限</label>
                 <select name="loanYears" id="loanYears">
@@ -249,40 +243,42 @@
                 <input type="radio" id="repayment1" name="repayment" value="repaymentMethod1" checked>本金平均攤還
                 <input type="radio" id="repayment2" name="repayment" value="repaymentMethod2">本息平均攤還
             </div>
-            <!--後端才需要submit-->
+            <!-- 後端才需要submit -->
             <button type="button" id="clacBtn">計算</button>
+
         </form>
-        <h2>試算結果
+        <h2>｜試算結果
             <button id="exportBtn" type="button"> 輸出CSV</button>
         </h2>
-        <div class="result">
-            <div>
-                <!-- 摘要表格 -->
-                <table border="1" class="summary-table">
-                    <thead>
-                        <tr>
-                            <th>項目</th>
-                            <th>金額</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>每月還款金額</td>
-                            <td id="monthlyPayment"></td>
-                        </tr>
-                        <tr>
-                            <td>總還款金額</td>
-                            <td id="totalPayment"></td>
-                        </tr>
-                        <tr>
-                            <td>總利息支出</td>
-                            <td id="totalInterest"></td>
-                        </tr>
-                    </tbody>
-                </table>
 
+        <div class="result">
+            <!-- 摘要表格 -->
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>項目</th>
+                        <th>金額</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>每月還款金額</td>
+                        <td id="monthlyPayment">-</td>
+                    </tr>
+                    <tr>
+                        <td>總還款金額</td>
+                        <td id="totalPayment">-</td>
+                    </tr>
+                    <tr>
+                        <td>總利息支出</td>
+                        <td id="totalInterest">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="table-scroll">
                 <!-- 分期明細表格 -->
-                <table border="1" class="detail-table">
+                <table border="1" class="detial-table">
                     <thead>
                         <tr>
                             <th>期數</th>
@@ -298,166 +294,148 @@
                 </table>
             </div>
         </div>
-        <script>
+    </div>
 
 
-            const title = document.querySelector("h1")
-            console.log(title);
-            //title.style.color = "green"
-            //修改內容1.只改文字
-            title.innerText = "AI貸款精算助手";
-            //修改內容2.含標籤語法
-            //title.innerHTML = "<b style='background-color:yellow'>AI貸款精算助手!</b>";
-            let schedules = [];
-            const amountEl = document.querySelector("#amount");
-            const rateEl = document.querySelector("#rate");
-            const loanYearsEl = document.querySelector("#loanYears");
-            const clacBtnEl = document.querySelector("#clacBtn");
-            console.log(amountEl, rateEl, loanYearsEl, clacBtnEl);
-            exportBtnE1.addEventListener("click", function (e) {
-                console.log(schedules);
-                if (schedules.length == 0) {
-                    alert("目前無資料,請先計算");
-                    return;
-                }
-                let data = [];
-                const headers = ["期數", "月付金額", "本金", "利息", "剩餘本金"]
-                for (let i = 0; i < schedules.length; i++) {
-                    data.push(
-                        [
-                            schedules[i].month,
-                            schedules[i].monthlyPayment + schedules[i].interest,
-                            schedules[i].monthlyPayment,
-                            schedules[i].interest,
-                            schedules[i].amount
-                        ]
-                    )
-                }
-                console.log(data)
-                downloadCSV(headers, data);
+    <script>
+        let schedules = [];
+        const amountEl = document.querySelector("#amount");
+        const rateEl = document.querySelector("#rate");
+        const loanYearsEl = document.querySelector("#loanYears");
+        const calcBtnEl = document.querySelector("#clacBtn");
+        const exportBtnEl = document.querySelector("#exportBtn");
 
-            });
+        console.log(amountEl, rateEl, loanYearsEl, calcBtnEl, exportBtnEl);
 
+        exportBtnEl.addEventListener("click", function (e) {
+            console.log(schedules);
 
-
-            clacBtn.addEventListener("click", function (e) {
-                let amount = amountEl.value;
-                let rate = rateEl.value;
-                let loanYears = loanYearsEl.value;
-                //多個radio用name的取值方式
-                let method = document.querySelector(
-                    "input[name='repayment']:checked"
-                ).value;
-
-                console.log(amount, rate, loanYears, method);
-                schedules = repaymentMethod1(amount * 10000, rate, loanYears);
-                renderTable(schedules);
-            });
-
-            function renderSummary(schedules) {
-                const monthlyPaymentEl = document.querySelector("#monthlyPayment");
-                const totalPaymentEl = document.querySelector("#totalPayment");
-                const totalInterestEl = document.querySelector("#totalInterest");
-
-                console.log(monthlyPaymentEl, totalPaymentEl, totalInterestEl);
-
-                monthlyPaymentEl.innerText = `第一個月還款：${schedules[0].monthlyPayment + schedules[0].interest}元`;
-
-                let totalInterest = 0, totalPayment = 0;
-                for (let i = 0; i < schedules.length; i++) {
-                    totalInterest += schedules[i].interest;
-                    totalPayment += schedules[i].monthlyPayment;
-                }
-
-                console.log(totalInterest, totalPayment);
-
-                totalPaymentEl.innerHTML = `<b style='color:blue'>${totalPayment + totalInterest}元</b>`;
-                totalInterestEl.innerHTML = `<b style='color:red'>${totalInterest}元</b>`;
-
-
+            if (schedules.length == 0) {
+                alert("目前無資料，請先計算!");
+                return;
             }
-            //繪製table
-            function renderTable(schedules) {
-                let tableHtml = "";
-                let totalPrincipalSum = 0; // 用於加總總還款金額
-                let totalInterestSum = 0;  // 用於加總總利息
-                for (let i = 0; i < schedules.length; i++) {
-                    // 累加每一期的數據
-                    totalPrincipalSum += schedules[i].monthlyPayment;
-                    totalInterestSum += schedules[i].interest;
-                    tableHtml += `
+            let data = [];
+            const headers = ["期數", "月付金額", "本金", "利息", "剩餘本金"];
+
+            for (let i = 0; i < schedules.length; i++) {
+                data.push(
+                    [
+                        schedules[i].month,
+                        schedules[i].monthlyPayment + schedules[i].interest,
+                        schedules[i].monthlyPayment,
+                        schedules[i].interest,
+                        schedules[i].amount
+                    ]
+                );
+            }
+
+            console.log(data);
+            downloadCSV(headers, data);
+
+        });
+
+
+        calcBtnEl.addEventListener("click", function (e) {
+            let amount = amountEl.value;
+            let rate = rateEl.value;
+            let loanYears = loanYearsEl.value;
+
+            //多個radio共用name的取值方式`
+            let method = document.querySelector(
+                "input[name='repayment']:checked"
+            ).value;
+
+
+            console.log(amount, rate, loanYears, method);
+
+            schedules = repaymentMethod1(amount * 10000, rate, loanYears);
+            renderSummary(schedules);
+            renderTable(schedules);
+        });
+
+
+        function renderSummary(schedules) {
+            const monthlyPaymentEl = document.querySelector("#monthlyPayment");
+            const totalPaymentEl = document.querySelector("#totalPayment");
+            const totalInterestEl = document.querySelector("#totalInterest");
+
+            console.log(monthlyPaymentEl, totalPaymentEl, totalInterestEl);
+
+            monthlyPaymentEl.innerText = `第一個月還款：${schedules[0].monthlyPayment + schedules[0].interest}元`;
+
+            let totalInterest = 0, totalPayment = 0;
+            for (let i = 0; i < schedules.length; i++) {
+                totalInterest += schedules[i].interest;
+                totalPayment += schedules[i].monthlyPayment;
+            }
+
+            console.log(totalInterest, totalPayment);
+
+            totalPaymentEl.innerHTML = `<b style='color:blue'>${totalPayment + totalInterest}元</b>`;
+            totalInterestEl.innerHTML = `<b style='color:red'>${totalInterest}元</b>`;
+
+
+        }
+
+        //繪製Table
+        function renderTable(schedules) {
+            let tableHtml = "";
+
+
+            for (let i = 0; i < schedules.length; i++) {
+                tableHtml += `
                     <tr>
-                        <td>${schedules[i].month}</td>
-                        <td>${schedules[i].monthlyPayment + schedules[i].interest}</td>
-                        <td>${schedules[i].monthlyPayment}</td>
-                        <td>${schedules[i].interest}</td>
-                        <td>${schedules[i].amount}</td>
+                        <td> ${schedules[i].month}</td>
+                        <td> ${schedules[i].monthlyPayment + schedules[i].interest}</td>
+                        <td> ${schedules[i].monthlyPayment}</td>
+                        <td> ${schedules[i].interest}</td>
+                        <td> ${schedules[i].amount}</td>
                     </tr>
-                    `;
-                }
-                console.log(tableHtml);
-                document.querySelector("#scheduleBody").innerHTML = tableHtml;
-                // 每月還款金額 (以第一期為準，或是您可以計算平均值)
-                const firstMonthPayment = schedules[0].monthlyPayment + schedules[0].interest;
-                document.querySelector("#monthlyPayment").innerText = firstMonthPayment.toLocaleString();
-
-                // 總還款金額
-                const totalPayment = totalPrincipalSum + totalInterestSum;
-                document.querySelector("#totalPayment").innerText = totalPayment.toLocaleString();
-
-                // 總利息支出
-                document.querySelector("#totalInterest").innerText = totalInterestSum.toLocaleString();
+                `;
             }
 
-            //本金平均攤還
-            function repaymentMethod1(amount, rate, years) {
+            //console.log(tableHtml);
 
-                let monthRate = rate / 100 / 12; //月利率
+            document.querySelector("#scheduleBody").innerHTML = tableHtml;
+        }
 
-                let months = years * 12;    //總期數
+        //本金平均攤還
+        function repaymentMethod1(amount, rate, years) {
+            let monthRate = rate / 100 / 12; //月利率
+            let months = years * 12;    //總期數
 
-                let monthlyPayment = Math.round(amount / months);
+            let monthlyPayment = Math.round(amount / months);
+            console.log(monthRate, months, monthlyPayment);
 
-                console.log(monthRate, months, monthlyPayment);
+            schedules = [];
+            for (let i = 0; i < months; i++) {
+                let interest = Math.round(amount * monthRate);
+                amount -= monthlyPayment;
 
-                schedules = [];
+                //最後一期
+                if (i == months - 1) {
+                    monthlyPayment += amount;
+                    amount = 0;
+                }
 
-                for (let i = 0; i < months; i++) {
-
-                    let interest = Math.round(amount * monthRate);
-
-                    amount -= monthlyPayment;
-
-                    //最後一期
-
-                    if (i == months - 1) {
-
-                        monthlyPayment += amount;
-
-                        amount = 0;
-
+                console.log(`${i + 1} 本金:${monthlyPayment} 利息:${interest} 剩餘餘額:${amount}`);
+                schedules.push(
+                    {
+                        "month": i + 1,
+                        "monthlyPayment": monthlyPayment,
+                        "interest": interest,
+                        "amount": amount
                     }
-
-                    console.log(`${i + 1} 本金:${monthlyPayment} 利息:${interest} 剩餘餘額:${amount}`);
-
-                    schedules.push(
-
-                        {
-                            "month": i + 1,
-                            "monthlyPayment": monthlyPayment,
-                            "interest": interest,
-                            "amount": amount
-                        }
-                    );
-                }
-
-                console.log(schedules);
-                return schedules;
-
-                //document.querySelector("#scheduleBody").innerHTML = tableHtml;
+                );
 
             }
-        </script>
+
+            console.log(schedules);
+
+            return schedules;
+        }
+
+    </script>
 </body>
 
 </html>
